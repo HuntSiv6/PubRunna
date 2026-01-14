@@ -102,6 +102,12 @@
     </aside>
 
     <div id="map"></div>
+
+    <!-- Mobile toolbar (visible on small screens) -->
+    <div id="mobileToolbar" class="mobile-toolbar" aria-hidden="true">
+      <div class="mobile-toolbar-inner"></div>
+    </div>
+
   </div>
 
   <div class="toast" id="toast"></div>
@@ -109,6 +115,23 @@
   <!-- Welcome Overlay -->
   <div id="welcomeOverlay">
     <div class="welcome-content">
+      <div class="mobile-scroll" aria-hidden="false">
+        <h4 class="scroll-title">How to plan a pub route</h4>
+        <div class="scroll-steps">
+          <div class="scroll-step">
+            <div class="step-num">1</div>
+            <div class="step-text"><strong>Locate</strong><div class="tiny">Tap <b>Locate</b> or search an address to set your start point.</div></div>
+          </div>
+          <div class="scroll-step">
+            <div class="step-num">2</div>
+            <div class="step-text"><strong>Find pubs</strong><div class="tiny">Choose a radius & dead-zone, then search for pubs and bars nearby.</div></div>
+          </div>
+          <div class="scroll-step">
+            <div class="step-num">3</div>
+            <div class="step-text"><strong>Route & share</strong><div class="tiny">Generate a route, save plans locally, or copy a shareable link.</div></div>
+          </div>
+        </div>
+      </div>
       <h1 class="welcome-title">Pub Runna</h1>
       <div class="welcome-sub">Your favourite pub and bar finder</div>
       <div class="welcome-steps">

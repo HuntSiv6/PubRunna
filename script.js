@@ -22,6 +22,8 @@
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19, attribution:'&copy; OpenStreetMap contributors'}).addTo(state.map);
   state.map.setView([-27.4698,153.0251],13);
   state.pubDeadzoneLayer.addTo(state.map); // <-- add this
+  // Ensure Leaflet redraws when the window/layout changes (toolbar show/hide, resize)
+  window.addEventListener('resize', ()=>{ if(state.map) try{ state.map.invalidateSize(); }catch(e){} });
 
   // Geocoder
   const geocoder=L.Control.geocoder({defaultMarkGeocode:false}).on('markgeocode',e=>{const c=e.geocode.center; state.map.setView(c,15); setUserLocation(c.lat,c.lng);}).addTo(state.map);
@@ -548,14 +550,144 @@
     }
   });
 
-  function escapeHtml(s){return(s||'').replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[c]));}
+function escapeHtml(s){return(s||'').replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[c]));}
+
+// Restore controls if they were moved into a temporary mobile toolbar
+(function restoreControls(){
+  try{
+    const sidebar = document.getElementById('sidebar');
+    const controls = document.querySelector('.controls');
+    const ref = sidebar.querySelector('.sectionTitle') || null;
+    if(controls && sidebar && !sidebar.contains(controls)){
+      sidebar.insertBefore(controls, ref);
+    }
+  }catch(e){/* ignore */}
+})();
+
+})();
+
+// Mobile toolbar init
+(function initMobileToolbar(){
+  try{
+    const mq = window.matchMedia('(max-width:600px)');
+    const mobileToolbar = document.getElementById('mobileToolbar');
+    const mobileInner = mobileToolbar && mobileToolbar.querySelector('.mobile-toolbar-inner');
+    const controls = document.querySelector('.controls');
+    function createOpenButton(){
+      if(document.getElementById('mobileToolbarOpen')) return;
+      const openBtn = document.createElement('button');
+      openBtn.id = 'mobileToolbarOpen';
+      openBtn.className = 'mobile-toolbar-toggle';
+      openBtn.textContent = 'Tools';
+      // place the open button at the bottom-right of the screen when toolbar is closed
+      openBtn.style.bottom = '8px';
+      openBtn.style.right = '12px';
+      openBtn.style.left = 'auto';
+      openBtn.style.transform = 'none';
+      openBtn.onclick = ()=>{
+        const mt = document.getElementById('mobileToolbar');
+        if(mt) mt.style.display='block';
+        openBtn.remove();
+        const tbtn=document.getElementById('mobileToolbarToggle'); if(tbtn) tbtn.style.display='';
+        // after showing, adjust the hide button to sit attached to the toolbar and center it
+        setTimeout(()=>{
+          const tbtn2 = document.getElementById('mobileToolbarToggle');
+          if(tbtn2 && mt){ 
+            tbtn2.style.bottom = `${Math.max(8, mt.getBoundingClientRect().height - 8)}px`;
+            tbtn2.style.left = '50%'; tbtn2.style.right = 'auto'; tbtn2.style.transform = 'translateX(-50%)';
+          }
+          // if welcome overlay is visible on launch, hide the hide button behind it
+          const welcome = document.getElementById('welcomeOverlay');
+          if(welcome && window.getComputedStyle(welcome).display !== 'none'){
+            const tb = document.getElementById('mobileToolbarToggle'); if(tb) tb.style.zIndex='99990';
+          }
+          window.dispatchEvent(new Event('resize'));
+        }, 120);
+      };
+      document.body.appendChild(openBtn);
+    }
+    function enable(){
+      if(!mobileToolbar || !mobileInner || !controls) return;
+      if(!mobileToolbar.contains(controls)){
+        // save restore info and move main controls
+        controls.__restore = { parent: controls.parentNode, nextSibling: controls.nextSibling };
+        mobileInner.appendChild(controls);
+
+        // Move selected stops, summary and footer into the toolbar for a compact mobile view
+        const extras = [document.querySelector('.sectionTitle'), document.getElementById('selectedList'), document.getElementById('rideonSummary'), document.querySelector('.footer')];
+        extras.forEach(el=>{
+          if(!el) return;
+          if(!mobileInner.contains(el)){
+            el.__restore = { parent: el.parentNode, nextSibling: el.nextSibling };
+            mobileInner.appendChild(el);
+          }
+        });
+
+        mobileToolbar.setAttribute('aria-hidden','false');
+        let btn = document.getElementById('mobileToolbarToggle');
+        if(!btn){
+          btn = document.createElement('button'); btn.id='mobileToolbarToggle'; btn.className='mobile-toolbar-toggle'; btn.textContent='Hide';
+          btn.onclick = ()=>{ mobileToolbar.style.display='none'; btn.style.display='none'; createOpenButton(); setTimeout(()=>window.dispatchEvent(new Event('resize')), 250); };
+          document.body.appendChild(btn);
+        } else { btn.style.display=''; }
+        // position the hide button slightly overlapping the toolbar so it appears attached
+        setTimeout(()=>{
+          try{
+            const h = mobileToolbar.getBoundingClientRect().height || mobileToolbar.offsetHeight;
+            // place it slightly inside the toolbar (overlap by 8px) and center it horizontally
+            btn.style.bottom = `${Math.max(8, h - 8)}px`;
+            btn.style.left = '50%'; btn.style.right = 'auto'; btn.style.transform = 'translateX(-50%)';
+            // if welcome overlay is visible, ensure hide button sits behind it
+            const welcome = document.getElementById('welcomeOverlay');
+            if(welcome && window.getComputedStyle(welcome).display !== 'none'){
+              btn.style.zIndex = '99990';
+            } else {
+              btn.style.zIndex = '99999';
+            }
+          }catch(e){}
+        },120);
+        // ensure map redraws under new layout
+        setTimeout(()=>window.dispatchEvent(new Event('resize')), 250);
+      }
+    }
+    function disable(){
+      // restore main controls
+      if(controls && controls.__restore){ const info = controls.__restore; if(info.parent){ info.parent.insertBefore(controls, info.nextSibling); } }
+      // restore extras
+      const extras = [document.querySelector('.sectionTitle'), document.getElementById('selectedList'), document.getElementById('rideonSummary'), document.querySelector('.footer')];
+      extras.forEach(el=>{
+        if(!el || !el.__restore) return;
+        const info = el.__restore; if(info.parent){ info.parent.insertBefore(el, info.nextSibling); }
+      });
+      if(mobileToolbar){ mobileToolbar.setAttribute('aria-hidden','true'); mobileToolbar.style.display=''; }
+      const btn = document.getElementById('mobileToolbarToggle'); if(btn) btn.style.display='none';
+      const openBtn = document.getElementById('mobileToolbarOpen'); if(openBtn) openBtn.remove();
+      setTimeout(()=>window.dispatchEvent(new Event('resize')), 250);
+    }
+    function handleChange(e){ if(e.matches) enable(); else disable(); }
+    if(mq.addEventListener) mq.addEventListener('change', handleChange); else mq.addListener(handleChange);
+    if(mq.matches) enable();
+    window.addEventListener('resize', ()=>{ if(window.matchMedia('(max-width:600px)').matches) enable(); else disable();
+      // also recompute hide button position if visible
+      setTimeout(()=>{
+        const mt = document.getElementById('mobileToolbar');
+        const btn = document.getElementById('mobileToolbarToggle');
+        if(mt && btn && mt.getBoundingClientRect().height>0){ try{ btn.style.bottom = `${mt.getBoundingClientRect().height + 12}px`; btn.style.left='50%'; btn.style.right='auto'; btn.style.transform='translateX(-50%)'; }catch(e){} }
+      }, 80);
+    });
+  }catch(e){/* ignore */}
 })();
 
 // Welcome overlay logic
 document.getElementById('welcomeContinueBtn').onclick = function() {
-  document.getElementById('welcomeOverlay').style.opacity = '0';
+  const welcome = document.getElementById('welcomeOverlay');
+  welcome.style.opacity = '0';
   setTimeout(() => {
-    document.getElementById('welcomeOverlay').style.display = 'none';
+    welcome.style.display = 'none';
     window.scrollTo({ top: document.getElementById('app').offsetTop, behavior: 'smooth' });
+    // trigger a resize to ensure the map invalidates and tiles render
+    window.dispatchEvent(new Event('resize'));
+    // bring the hide button forward now the overlay is gone
+    const btn = document.getElementById('mobileToolbarToggle'); if(btn) btn.style.zIndex='99999';
   }, 400);
 };

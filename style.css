@@ -83,12 +83,19 @@ button.danger{background:#ef4444}
   background: transparent; /* Remove panel background */
   border-radius: 40px;
   box-shadow: none;
-  padding: 10px 0 32px 0;
+  padding: 20px 0 40px 0; /* more breathing room */
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 38px;
+  gap: 48px; /* increased spacing */
 }
+.welcome-title { margin-top: 0; margin-bottom: 0; }
+.welcome-sub { margin-top: 8px; margin-bottom: 4px; }
+.welcome-steps { gap: 44px; }
+.welcome-step { padding: 34px 38px 30px 38px; min-height: 160px; }
+#welcomeContinueBtn { padding: 18px 56px; }
+/* mobile-scroll is hidden by default (desktop) */
+.mobile-scroll{display:none}
 .welcome-title {
   font-size: 2.7rem;
   font-weight: 800;
@@ -182,8 +189,10 @@ button.danger{background:#ef4444}
 /* Mobile (phone) adjustments */
 @media (max-width: 600px) {
   /* Layout */
-  #app { grid-template-columns: 1fr; grid-template-rows: auto 1fr; }
-  #sidebar { width:100%; height:auto; border-right:none; border-bottom:1px solid #1f2b38; }
+  /* Map sits in the top row and sidebar below on small screens */
+  #app { grid-template-columns: 1fr; grid-template-rows: 1fr auto; }
+  #map{order:1}
+  #sidebar{order:2; width:100%; height:auto; border-right:none; border-bottom:1px solid #1f2b38; }
   header { padding:12px; }
 
   /* Controls and inputs */
@@ -201,5 +210,29 @@ button.danger{background:#ef4444}
 
   /* Toast and overlays */
   .toast { left:16px; right:16px; transform:none; }
-  #welcomeOverlay .welcome-content { width:95vw; padding:12px; gap:18px }
+  #welcomeOverlay .welcome-content { width:95vw; padding:20px; gap:22px }
+  /* give mobile welcome sections a little more space */
+  .mobile-scroll{margin-bottom:18px}
+  .welcome-step{padding:22px 20px; min-height:120px}
+
+  /* Mobile welcome scroll */
+  .mobile-scroll{display:block;background:#0f141b;border:1px solid #243244;border-radius:12px;padding:10px;max-height:44vh;overflow-y:auto;-webkit-overflow-scrolling:touch;margin-bottom:12px}
+  .mobile-scroll .scroll-title{font-weight:700;margin:0 0 6px;color:var(--brand)}
+  .mobile-scroll .scroll-step{display:flex;gap:10px;align-items:flex-start;padding:8px 6px;border-bottom:1px solid #17202a}
+  .mobile-scroll .scroll-step:last-child{border-bottom:none}
+  .mobile-scroll .step-num{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--accent);color:#fff;font-weight:700}
+  .mobile-scroll .step-text strong{display:block;font-weight:700}
+  .mobile-scroll .step-text .tiny{color:var(--muted);font-size:0.95rem}
+  /* Hide original grid on mobile to avoid duplication */
+  .welcome-steps{display:none}
+
+  /* Mobile toolbar overlay: bottom third scrollable toolbar */
+  .mobile-toolbar{display:block; position:fixed; bottom:0; left:0; right:0; height:33vh; z-index:99998; background:var(--panel); border-top:1px solid #1f2b38; box-shadow: 0 -6px 24px #0006; overflow-y:auto; -webkit-overflow-scrolling:touch;}
+  .mobile-toolbar-inner{padding:12px 16px}
+  .mobile-toolbar .controls{padding:8px 8px}
+  /* make selected list scrollable inside the toolbar (if long) and style footer */
+  .mobile-toolbar #selectedList{max-height:18vh; overflow:auto; margin-bottom:8px}
+  .mobile-toolbar .footer{border-top:1px solid #17202a; padding-top:12px; margin-top:12px; color:var(--muted)}
+  /* a small handle to reopen if collapsed */
+  .mobile-toolbar-toggle{position:fixed; bottom:8px; right:12px; z-index:99999; background:#0f141b; border:1px solid #2b3b4e; color:var(--text); padding:6px 8px; border-radius:10px; font-weight:700}
 }
