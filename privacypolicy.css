@@ -15,3 +15,15 @@ html,body{height:100%;margin:0;padding:0;font-family:system-ui,-apple-system,Seg
 
 /* Effective date styling */
 .effective-date{color:var(--muted);font-size:0.95rem;margin-top:6px;font-weight:600}
+
+/* Mobile adjustments for privacy page */
+@media (max-width:600px){
+  #aboutApp{margin:20px 12px;padding:0 12px}
+  .hero-inner{padding:14px}
+  .hero-title{font-size:1.6rem}
+  .features{grid-template-columns:1fr;gap:10px}
+  .card{padding:12px}
+  .btn-row{text-align:center}
+  .btn-row .button{width:100%}
+  .effective-date{font-size:0.9rem}
+}

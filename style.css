@@ -178,3 +178,28 @@ button.danger{background:#ef4444}
   .welcome-steps { flex-direction: column; gap: 24px; }
   .welcome-step { min-width: 0; max-width: 100%; width: 100%; align-items: flex-start; }
 }
+
+/* Mobile (phone) adjustments */
+@media (max-width: 600px) {
+  /* Layout */
+  #app { grid-template-columns: 1fr; grid-template-rows: auto 1fr; }
+  #sidebar { width:100%; height:auto; border-right:none; border-bottom:1px solid #1f2b38; }
+  header { padding:12px; }
+
+  /* Controls and inputs */
+  .controls { padding:12px; gap:10px; }
+  .row { flex-direction:column; align-items:stretch; gap:10px; }
+  input[type="text"], input[type="number"], select { padding:12px 14px; font-size:16px; }
+
+  /* Buttons and touch targets */
+  button, .button { width:100%; display:block; padding:12px 14px; font-size:16px; }
+  button.ghost, .button.ghost { box-sizing:border-box; }
+
+  /* Sidebar list and footer */
+  .list { padding-bottom:48px; }
+  .footer { padding:12px; font-size:13px; }
+
+  /* Toast and overlays */
+  .toast { left:16px; right:16px; transform:none; }
+  #welcomeOverlay .welcome-content { width:95vw; padding:12px; gap:18px }
+}
