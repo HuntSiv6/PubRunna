@@ -1,0 +1,63 @@
+:root{--bg:#0b0f13;--panel:#121820;--text:#eaf2ff;--muted:#9fb0c3;--brand:#6ee7b7;--accent:#60a5fa}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;padding:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Helvetica,Arial,sans-serif;color:var(--text);background:var(--bg)}
+#aboutApp{max-width:1100px;margin:48px auto;padding:28px;border-radius:16px}
+.about-header{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:8px 4px}
+.about-header .brand{display:flex;align-items:center;gap:12px}
+.about-header .brand h1{font-size:20px;margin:0}
+.about-header .badge{font-size:11px;background:#1b2633;color:var(--muted);padding:4px 10px;border-radius:999px}
+.about-nav{display:flex;gap:16px;align-items:center}
+.about-nav .link{font-size:14px}
+
+/* Hero */
+.about-main{margin-top:18px}
+.hero{width:100vw;margin-left:calc(50% - 50vw);padding:28px 0;background:linear-gradient(180deg, rgba(96,165,250,0.06), transparent);border-bottom:1px solid #17202a}
+.hero-inner{max-width:1100px;margin:0 auto;padding:22px;border-radius:12px;background:transparent;border:none;display:flex;flex-direction:column;gap:8px}
+
+/* Steps row */
+.steps-row{max-width:1100px;margin:18px auto;padding:0 6px}
+.welcome-steps{display:flex;gap:12px}
+.welcome-step{flex:1;min-height:100px;padding:14px;border-radius:12px;background:#0f141b;border:1px solid #243244;display:flex;flex-direction:column;gap:8px}
+.hero-title{font-size:2.1rem;margin:0 0 8px;color:var(--brand)}
+.hero-sub{color:var(--muted);margin:0 0 12px}
+.hero-cta{display:flex;gap:12px}
+.hero-illustration{width:360px}
+.welcome-steps.small{display:flex;flex-direction:column;gap:12px}
+.welcome-step{background:#0f141b;border:1px solid #243244;border-radius:12px;padding:12px;display:flex;gap:10px;align-items:flex-start;min-height:0}
+.step-num{background:var(--accent);color:#fff;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700}
+.step-title{font-weight:700;color:var(--brand)}
+.step-desc{color:var(--text);font-size:0.95rem}
+
+/* Features */
+.features{margin-top:26px}
+.features h3{margin:0 0 12px}
+.features-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.card.feature{padding:14px}
+.feature-title{font-weight:700}
+
+/* Credits & contact */
+.credits, .contact{margin-top:18px;padding:12px;background:#0f141b;border:1px solid #243244;border-radius:12px}
+
+/* Author */
+.author{margin-top:18px;padding:20px;background:#0f141b;border:1px solid #243244;border-radius:12px;min-height:220px;display:flex;gap:18px;align-items:flex-start}
+.author .avatar{width:120px;height:120px;border-radius:12px;background:linear-gradient(135deg,#0e1720,#12202a);border:1px solid #1f2b38;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:var(--muted);font-weight:700}
+.author .bio{flex:1}
+.author h3{margin-top:0}
+/* Make the main author bio text more prominent */
+.author .bio .tiny{color:var(--text);font-size:1rem;line-height:1.45}
+/* Keep the muted helper text muted */
+.author .bio .tiny.muted{color:var(--muted);font-size:0.9rem}
+@media (max-width:900px){.author{flex-direction:column;align-items:stretch}.author .avatar{width:100%;height:110px}}
+
+.about-footer{margin-top:20px;display:flex;justify-content:center}
+
+/* Buttons */
+.button{display:inline-block;background:var(--accent);color:#fff;padding:10px 16px;border-radius:12px;text-decoration:none;font-weight:700}
+.button.ghost{background:transparent;border:1px solid #2b3b4e;color:var(--text)}
+
+/* Responsive */
+@media (max-width:900px){
+  .hero{flex-direction:column}
+  .hero-illustration{width:100%}
+  .features-grid{grid-template-columns:1fr}
+}
