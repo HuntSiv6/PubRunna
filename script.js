@@ -25,6 +25,24 @@
   // Ensure Leaflet redraws when the window/layout changes (toolbar show/hide, resize)
   window.addEventListener('resize', ()=>{ if(state.map) try{ state.map.invalidateSize(); }catch(e){} });
 
+  // Helper for retrying Overpass fetches (handles rate-limiting)
+  async function fetchWithRetry(url, options, retries = 3, delay = 2000) {
+    for (let i = 0; i < retries; i++) {
+      try {
+        const res = await fetch(url, options);
+        if (res.ok) return res;
+        if (res.status === 429 || res.status >= 500) { // rate limit or server error
+          await new Promise(r => setTimeout(r, delay * (i + 1)));
+          continue;
+        }
+        throw new Error(`HTTP ${res.status}`);
+      } catch (e) {
+        if (i === retries - 1) throw e;
+        await new Promise(r => setTimeout(r, delay * (i + 1)));
+      }
+    }
+  }
+
   // Geocoder
   const geocoder=L.Control.geocoder({defaultMarkGeocode:false}).on('markgeocode',e=>{const c=e.geocode.center; state.map.setView(c,15); setUserLocation(c.lat,c.lng);}).addTo(state.map);
 
@@ -111,10 +129,10 @@
   const dz=parseFloat(el('deadzoneInput')?.value||'0');
   const amenities=el('amenitySelect').value;
   const {lat,lng}=state.lastCenter;
-  const query=`[out:json][timeout:25];(node["amenity"~"^(${amenities})$"](around:${Math.round(km*1000)},${lat},${lng});way["amenity"~"^(${amenities})$"](around:${Math.round(km*1000)},${lat},${lng});relation["amenity"~"^(${amenities})$"](around:${Math.round(km*1000)},${lat},${lng}););out center tags;`;
+  const query=`[out:json][timeout:30];(node["amenity"~"^(${amenities})$"](around:${Math.round(km*1000)},${lat},${lng});way["amenity"~"^(${amenities})$"](around:${Math.round(km*1000)},${lat},${lng});relation["amenity"~"^(${amenities})$"](around:${Math.round(km*1000)},${lat},${lng}););out center tags;`;
   try{
     toast('Searching nearby…');
-    const res=await fetch('https://overpass-api.de/api/interpreter',{method:'POST',body:query,headers:{'Content-Type':'text/plain'}});
+    const res=await fetchWithRetry('https://overpass-api.de/api/interpreter',{method:'POST',body:query,headers:{'Content-Type':'text/plain'}});
     const data=await res.json();
     state.pubs=data.elements.map(elm=>{
       const c=elm.center||{lat:elm.lat,lon:elm.lon};
@@ -459,10 +477,10 @@
     if (!dz || dz < 0) dz = 0;
     const amenities = el('amenitySelect').value;
     const { lat, lng } = state.lastCenter;
-    const query = `[out:json][timeout:25];(node["amenity"~"^(${amenities})$"](around:${Math.round(km*1000)},${lat},${lng});way["amenity"~"^(${amenities})$"](around:${Math.round(km*1000)},${lat},${lng});relation["amenity"~"^(${amenities})$"](around:${Math.round(km*1000)},${lat},${lng}););out center tags;`;
+    const query = `[out:json][timeout:30];(node["amenity"~"^(${amenities})$"](around:${Math.round(km*1000)},${lat},${lng});way["amenity"~"^(${amenities})$"](around:${Math.round(km*1000)},${lat},${lng});relation["amenity"~"^(${amenities})$"](around:${Math.round(km*1000)},${lat},${lng}););out center tags;`;
     try {
       toast('Finding random pubs…');
-      const res = await fetch('https://overpass-api.de/api/interpreter', { method: 'POST', body: query, headers: { 'Content-Type': 'text/plain' } });
+      const res = await fetchWithRetry('https://overpass-api.de/api/interpreter', { method: 'POST', body: query, headers: { 'Content-Type': 'text/plain' } });
       const data = await res.json();
       let pubs = data.elements.map(elm => {
         const c = elm.center || { lat: elm.lat, lon: elm.lon };
