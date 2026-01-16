@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>How Pub Runna Works - Operations</title>
+  <link rel="stylesheet" href="operations.css" />
+</head>
+<body>
+  <div id="menu-dropdown" class="menu-dropdown">
+    <button id="menu-btn" class="menu-btn">☰</button>
+    <div id="menu-content" class="menu-content">
+      <a href="index.html">Home</a>
+      <a href="map.html">Pub Finder</a>
+      <a href="tos.html">Terms of Service</a>
+      <a href="privacypolicy.html">Privacy Policy</a>
+      <a href="about.html">About</a>
+    </div>
+  </div>
+
+  <div id="operations">
+    <header>
+      <h1>How Pub Runna Works</h1>
+      <p class="subtitle">A deep dive into our pub finding and route planning operations</p>
+    </header>
+
+    <article>
+      <section>
+        <h2>Location Detection</h2>
+        <p>When you click "📍 Locate me", Pub Runna uses your browser's Geolocation API to request your current position. This data is never stored or shared - it's only used temporarily to center the map and set your starting point. If you prefer privacy, you can manually enter an address instead.</p>
+      </section>
+
+      <section>
+        <h2>Pub Data Sourcing</h2>
+        <p>All pub and bar data comes from OpenStreetMap (OSM), a free, open-source map database maintained by volunteers worldwide. We query the Overpass API with your specified radius and amenity type (pubs or bars). The data includes names, coordinates, and basic information, which we display as markers on the map.</p>
+        <p>Data is fetched in real-time and cached briefly for performance. We don't store any venue data permanently.</p>
+      </section>
+
+      <section>
+        <h2>Radius and Dead-Zone Calculations</h2>
+        <p>The blue circle represents your maximum search radius. The red circles around selected pubs indicate dead-zones - areas where new pubs won't be suggested to avoid overcrowding. We use the Turf.js library for geometric calculations and distance measurements.</p>
+        <p>Dead-zones are calculated using buffer operations around each selected pub, ensuring a minimum distance between stops.</p>
+      </section>
+
+      <section>
+        <h2>Random Route Generation</h2>
+        <p>Our random route feature uses a weighted algorithm to select pubs within your criteria. It prioritizes pubs that are:</p>
+        <ul>
+          <li>Within your radius</li>
+          <li>Outside existing dead-zones</li>
+          <li>Optimally spaced for walking</li>
+        </ul>
+        <p>The algorithm considers walking distances and tries to create a logical path, though it's randomized for discovery.</p>
+      </section>
+
+      <section>
+        <h2>Route Planning and OSRM</h2>
+        <p>For detailed routing, we use the Open Source Routing Machine (OSRM) demo service. This calculates walking/driving routes between your selected pubs. The routing considers:</p>
+        <ul>
+          <li>Real street networks</li>
+          <li>Walking speeds</li>
+          <li>Traffic restrictions</li>
+        </ul>
+        <p>Route data is processed client-side and displayed using Leaflet Routing Machine.</p>
+      </section>
+
+      <section>
+        <h2>Data Privacy</h2>
+        <p>Pub Runna operates entirely in your browser. Your location data, selected pubs, and saved plans are stored locally using browser storage. Nothing is sent to our servers - all processing happens on your device.</p>
+        <p>Saved plans use localStorage, which persists between sessions but stays on your device.</p>
+      </section>
+
+      <section>
+        <h2>Shareable Links</h2>
+        <p>When you share a plan, we encode your selected pubs as base64 JSON in the URL. This allows others to view your exact route without storing data on our end. The link is self-contained and doesn't require server processing.</p>
+      </section>
+    </article>
+  </div>
+
+  <script src="operations.js"></script>
+</body>
+</html></content>
+<parameter name="filePath">c:\Users\hunte\OneDrive\Documents\PubRunna\operations.html

@@ -1,0 +1,145 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-WQYNWC5262"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-WQYNWC5262');
+</script>
+
+  <!-- Google Adsense verification -->
+   <meta name="google-adsense-account" content="ca-pub-5229714996890988">
+
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pub Runna: Pub Crawl Planner</title>
+
+  <!-- Preconnect and external CSS -->
+  <link rel="preconnect" href="https://unpkg.com" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+
+  <!-- Project stylesheet -->
+  <link rel="stylesheet" href="map.css" />
+</head>
+<body>
+  <div id="operations-banner" class="operations-banner">
+    <div class="banner-content">
+      <span>Still have trouble or curious to see how Pub Runna operates? <button id="operations-btn" class="operations-btn">Click here</button></span>
+      <button id="dismiss-banner" class="dismiss-btn">×</button>
+    </div>
+  </div>
+
+  <div id="menu-dropdown" class="menu-dropdown">
+    <button id="menu-btn" class="menu-btn">☰</button>
+    <div id="menu-content" class="menu-content">
+      <a href="index.html">Home</a>
+      <a href="operations.html">How Pub Runna Operates</a>
+      <a href="tos.html">Terms of Service</a>
+      <a href="privacypolicy.html">Privacy Policy</a>
+      <a href="about.html">About</a>
+    </div>
+  </div>
+
+  <div id="app">
+    <aside id="sidebar">
+      <header>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 10h10M7 14h10" stroke="#6ee7b7" stroke-width="2" stroke-linecap="round"/><path d="M6 19.5c1.5-1.5 3-2.25 6-2.25s4.5.75 6 2.25" stroke="#60a5fa" stroke-width="2" stroke-linecap="round"/></svg>
+        <h1> Pub Runna </h1>
+        <span class="badge">Leisure and Entertainment</span>
+      </header>
+
+      <div class="controls">
+        <div class="group">
+          <div class="label">Your location</div>
+          <div class="row">
+            <button id="locateBtn">📍 Locate me</button>
+            <button id="clearPubsBtn" class="secondary">Clear pubs</button>
+          </div>
+          <div class="row">
+            <input id="manualAddressInput" type="text" placeholder="Type address or street…" />
+            <button id="manualAddressBtn" class="ghost">Set location</button>
+          </div>
+          <div class="row">
+            <input id="searchBox" type="text" placeholder="Search a pub…" />
+            <button id="searchBtn" class="ghost">Search</button>
+          </div>
+        </div>
+
+        <div class="group">
+          <div class="label">Radius (km) & Dead-zone (km)</div>
+          <div class="row">
+            <input id="radiusInput" type="number" min="0.2" step="0.2" value="1" />
+            <input id="deadzoneInput" type="number" min="0" step="0.2" value="0" style="width:90px" />
+            <select id="amenitySelect">
+              <option value="pub">Pubs</option>
+              <option value="bar">Bars</option>
+            </select>
+            <button id="findBtn" class="ghost">Find</button>
+          </div>
+          <div class="row">
+            <button id="randomRouteBtn" class="ghost" style="width:100%">Generate random route</button>
+          </div>
+          <div class="tiny muted">
+            Data via OpenStreetMap/Overpass • Routing via OSRM demo<br>
+            <span style="color:#60a5fa">Blue = max distance</span>,
+            <span style="color:#ef4444">Red = min distance (dead-zone)</span>
+          </div>
+        </div>
+
+        <div class="group">
+          <div class="label ghost" style="cursor:pointer;display:flex;align-items:center;gap:6px;justify-content:flex-start;" id="rideonDropdownToggle">
+            <span id="rideonDropdownArrow" style="transition:transform 0.2s;">▼</span>
+            Ride‑On (your crawl)
+          </div>
+          <div id="rideonDropdownContent" style="display:none;">
+            <div class="row">
+              <button id="routeBtn">Route selected</button>
+              <button id="resetRouteBtn" class="secondary">Reset route</button>
+            </div>
+            <div class="row">
+              <input id="planName" type="text" placeholder="Plan name (e.g. West End Crawl)" />
+              <button id="savePlanBtn" class="ghost">Save</button>
+              <button id="sharePlanBtn" class="ghost">Share</button>
+            </div>
+            <div class="row">
+              <select id="savedPlansSelect"></select>
+              <button id="loadPlanBtn" class="ghost">Load</button>
+              <button id="deletePlanBtn" class="danger">Delete</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sectionTitle">Selected stops</div>
+      <div id="selectedList" class="list"></div>
+      <div id="rideonSummary">Total trips: 0 • Estimated travel time: 0 min</div>
+      <div class="footer">Designed and coded by Hunter Siviour <br> • Map data © OpenStreetMap contributors <br> <a class="link" href="about.html">About Pub Runna</a> • <a class="link" href="privacypolicy.html">Privacy Policy</a> • <a class="link" href="tos.html">Terms of Service</a></div>
+    </aside>
+
+    <div id="map"></div>
+
+    <!-- Mobile toolbar (visible on small screens) -->
+    <div id="mobileToolbar" class="mobile-toolbar" aria-hidden="true">
+      <div class="mobile-toolbar-inner"></div>
+    </div>
+
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <!-- External JS libraries (order matters) -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.min.js"></script>
+  <script src="https://unpkg.com/@turf/turf@6.5.0/turf.min.js"></script>
+  <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+
+  <!-- Project script -->
+  <script src="map.js"></script>
+</body>
+</html>

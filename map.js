@@ -18,10 +18,11 @@
   const toast=(msg)=>{const t=el('toast'); t.textContent=msg; t.style.display='block'; setTimeout(()=>t.style.display='none',2200);};
 
   // Map
-  state.map=L.map('map');
+  state.map=L.map('map', { zoomControl: false });
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19, attribution:'&copy; OpenStreetMap contributors'}).addTo(state.map);
   state.map.setView([-27.4698,153.0251],13);
   state.pubDeadzoneLayer.addTo(state.map); // <-- add this
+  window.dispatchEvent(new Event('resize')); // Trigger resize for map to render properly
   // Ensure Leaflet redraws when the window/layout changes (toolbar show/hide, resize)
   window.addEventListener('resize', ()=>{ if(state.map) try{ state.map.invalidateSize(); }catch(e){} });
 
@@ -42,9 +43,6 @@
       }
     }
   }
-
-  // Geocoder
-  const geocoder=L.Control.geocoder({defaultMarkGeocode:false}).on('markgeocode',e=>{const c=e.geocode.center; state.map.setView(c,15); setUserLocation(c.lat,c.lng);}).addTo(state.map);
 
   // Load saved plans
   function refreshPlansDropdown(){
@@ -694,18 +692,39 @@ function escapeHtml(s){return(s||'').replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&l
       }, 80);
     });
   }catch(e){/* ignore */}
-})();
 
-// Welcome overlay logic
-document.getElementById('welcomeContinueBtn').onclick = function() {
-  const welcome = document.getElementById('welcomeOverlay');
-  welcome.style.opacity = '0';
-  setTimeout(() => {
-    welcome.style.display = 'none';
-    window.scrollTo({ top: document.getElementById('app').offsetTop, behavior: 'smooth' });
-    // trigger a resize to ensure the map invalidates and tiles render
-    window.dispatchEvent(new Event('resize'));
-    // bring the hide button forward now the overlay is gone
-    const btn = document.getElementById('mobileToolbarToggle'); if(btn) btn.style.zIndex='99999';
-  }, 400);
-};
+// Operations banner
+const banner = document.getElementById('operations-banner');
+const dismissBtn = document.getElementById('dismiss-banner');
+const operationsBtn = document.getElementById('operations-btn');
+
+// Check if banner was dismissed
+if (localStorage.getItem('operationsBannerDismissed')) {
+  banner.classList.add('hidden');
+}
+
+// Dismiss banner
+dismissBtn.addEventListener('click', () => {
+  banner.classList.add('hidden');
+  localStorage.setItem('operationsBannerDismissed', 'true');
+});
+
+// Go to operations page
+operationsBtn.addEventListener('click', () => {
+  window.location.href = 'operations.html';
+});
+
+// Menu dropdown
+const menuBtn = document.getElementById('menu-btn');
+const menuDropdown = document.getElementById('menu-dropdown');
+menuBtn.addEventListener('click', () => {
+  menuDropdown.classList.toggle('open');
+});
+// Close when clicking outside
+document.addEventListener('click', (e) => {
+  if (!menuDropdown.contains(e.target)) {
+    menuDropdown.classList.remove('open');
+  }
+});
+
+})();
