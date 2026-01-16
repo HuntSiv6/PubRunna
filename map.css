@@ -6,7 +6,7 @@
 .operations-btn:hover { background: var(--brand); }
 .dismiss-btn { background: none; border: none; color: var(--muted); font-size: 24px; cursor: pointer; padding: 0; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; }
 .dismiss-btn:hover { color: var(--text); }
-.menu-dropdown { position: fixed; top: 20px; right: 20px; z-index: 1001; }
+.menu-dropdown { position: fixed; top: 72px; right: 20px; z-index: 1001; transition: top 0.3s ease; }
 .menu-btn { background: var(--panel); border: 2px solid var(--accent); color: var(--text); width: 40px; height: 40px; border-radius: 8px; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; }
 .menu-btn:hover { background: var(--accent); color: white; }
 .menu-content { display: none; position: absolute; top: 50px; right: 0; background: var(--panel); border: 2px solid var(--accent); border-radius: 8px; min-width: 200px; box-shadow: 0 4px 16px rgba(0,0,0,0.3); }
